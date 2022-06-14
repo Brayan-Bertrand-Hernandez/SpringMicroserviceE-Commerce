@@ -2,7 +2,7 @@ package com.commerce.products.factory;
 
 import java.util.List;
 
-import com.commerce.products.model.Product;
+import com.commerce.commons.model.Product;
 
 public interface ProductFactory {
 	

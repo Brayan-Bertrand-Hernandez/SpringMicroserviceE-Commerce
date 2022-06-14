@@ -1,5 +1,7 @@
 package com.commerce.item.model;
 
+import com.commerce.commons.model.Product;
+
 public class Item {
 
 	private Product product;

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.commerce.products.model.Product;
+import com.commerce.commons.model.Product;
 import com.commerce.products.service.ProductService;
 
 @RestController

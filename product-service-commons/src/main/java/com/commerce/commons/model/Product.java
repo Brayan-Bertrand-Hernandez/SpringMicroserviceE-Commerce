@@ -1,4 +1,4 @@
-package com.commerce.products.model;
+package com.commerce.commons.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -30,6 +31,11 @@ public class Product implements Serializable {
 	
 	@Transient
 	private Integer port;
+	
+	@PrePersist
+	public void setDefaults() {
+		createAt = new Date();
+	}
 
 	public Long getId() {
 		return id;
