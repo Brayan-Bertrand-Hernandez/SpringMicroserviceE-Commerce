@@ -112,7 +112,7 @@ public class ItemController {
 		return new ResponseEntity<>(currentItem, HttpStatus.OK);
 	}
 	
-	@PostMapping("/new")
+	@PostMapping("/add")
 	public ResponseEntity<?> create(@RequestBody Product product, BindingResult bindingResult) throws IOException {
 		response = new HashMap<>();
 

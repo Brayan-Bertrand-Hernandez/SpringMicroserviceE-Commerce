@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableEurekaClient
 @EnableFeignClients
 @SpringBootApplication
-@EntityScan({"import com.commerce.users.model", "import com.commerce.commons.email.model", "import com.commerce.commons.email.factory"})
+@EntityScan({"com.commerce.commons.users.model", "import com.commerce.commons.email.model", "import com.commerce.commons.email.factory"})
 public class ProductServiceUsersApplication {
 
 	public static void main(String[] args) {

@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.commerce.commons.users.model.User;
 import com.commerce.users.factory.UserFactory;
-import com.commerce.users.model.User;
 import com.commerce.users.repository.UserRepository;
 
 @Service

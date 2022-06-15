@@ -20,6 +20,11 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>com.commerce.commons.users</groupId>
+			<artifactId>product-service-commons-users</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.commerce.commons.email</groupId>
 			<artifactId>product-service-commons-email</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

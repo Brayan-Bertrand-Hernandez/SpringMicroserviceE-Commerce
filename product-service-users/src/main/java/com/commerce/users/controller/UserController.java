@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.commerce.commons.email.model.Email;
-import com.commerce.users.model.Role;
-import com.commerce.users.model.User;
+import com.commerce.commons.users.model.Role;
+import com.commerce.commons.users.model.User;
 import com.commerce.users.service.EmailService;
 import com.commerce.users.service.RoleService;
 import com.commerce.users.service.UserService;
@@ -90,7 +90,7 @@ public class UserController {
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
-	@GetMapping("/enabled")
+	@GetMapping("/index/enabled")
 	public ResponseEntity<?> indexEnabledUsers() {
 		List<User> enabled_users = userService.findAllEnabledUsers();
 		response = new HashMap<>();
@@ -301,7 +301,7 @@ public class UserController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/update/id/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<?> update(@RequestBody User user, BindingResult bindingResult, @PathVariable Long id) {
 		User currentUser = userService.findById(id);
 		User updatedUser;
@@ -380,7 +380,7 @@ public class UserController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
-	@DeleteMapping("/delete/id/{id}")
+	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		User deleteUser = userService.findById(id);
 		response = new HashMap<>();

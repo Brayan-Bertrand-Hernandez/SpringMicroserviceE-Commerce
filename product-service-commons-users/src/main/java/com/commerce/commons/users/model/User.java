@@ -1,4 +1,4 @@
-package com.commerce.users.model;
+package com.commerce.commons.users.model;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -162,6 +162,6 @@ public class User implements Serializable {
 		this.port = port;
 	}
 
-	private static final long serialVersionUID = 5591090695464102810L;
+	private static final long serialVersionUID = 2886496129429582326L;
 
 }

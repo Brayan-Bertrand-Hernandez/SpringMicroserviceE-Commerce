@@ -1,4 +1,4 @@
-package com.commerce.users.model;
+package com.commerce.commons.users.model;
 
 import java.io.Serializable;
 
@@ -41,6 +41,6 @@ public class Role implements Serializable {
 		this.authority = authority;
 	}
 
-	private static final long serialVersionUID = 1919983895242351389L;
-
+	private static final long serialVersionUID = 8031910508046340835L;
+	
 }

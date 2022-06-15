@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.commerce.users.model.User;
+import com.commerce.commons.users.model.User;
 
 public interface UserFactory {
 

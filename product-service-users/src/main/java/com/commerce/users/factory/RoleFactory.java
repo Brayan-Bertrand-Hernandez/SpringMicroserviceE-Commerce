@@ -2,7 +2,7 @@
 
 import java.util.List;
 
-import com.commerce.users.model.Role;
+import com.commerce.commons.users.model.Role;
 
 public interface RoleFactory {
 	
