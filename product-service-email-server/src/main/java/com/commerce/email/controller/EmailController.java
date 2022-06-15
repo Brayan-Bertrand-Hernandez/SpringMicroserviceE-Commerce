@@ -43,6 +43,8 @@ public class EmailController {
 	
 	@PostMapping("/simple")
 	public ResponseEntity<?> simpleEmail(@RequestBody Email mail) {	
+		response = new HashMap<>();
+		
 		try {
 			emailService.sendSimpleMessage(mail);
 		} catch(Exception e) {
@@ -69,6 +71,8 @@ public class EmailController {
 	
 	@PostMapping("/files")
 	public ResponseEntity<?> fileEmail(@RequestBody Email mail) {
+		response = new HashMap<>();
+		
 		try {
 			emailService.sendMessageWithAttachment(mail);
 		} catch(Exception e) {
