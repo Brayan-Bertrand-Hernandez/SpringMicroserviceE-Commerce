@@ -22,19 +22,22 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false, length = 50)
 	private String name;
+	
+	@Column(nullable = false)
 	private Double price;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "create_at")
-	private Date createAt;
+	@Column(nullable = false, name = "created_at")
+	private Date createdAt;
 	
 	@Transient
 	private Integer port;
 	
 	@PrePersist
 	public void setDefaults() {
-		createAt = new Date();
+		createdAt = new Date();
 	}
 
 	public Long getId() {
@@ -61,12 +64,12 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
-	public Date getCreateAt() {
-		return createAt;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreateAt(Date createAt) {
-		this.createAt = createAt;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public Integer getPort() {

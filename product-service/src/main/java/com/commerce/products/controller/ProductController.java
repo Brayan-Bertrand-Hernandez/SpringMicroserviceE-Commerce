@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +27,23 @@ import com.commerce.products.service.ProductService;
 public class ProductController {
 
 	@Autowired
-	private Environment env;
-
-	@Autowired
 	private ProductService productService;
+	
+	@Value("${spring.profiles.active}")
+	private String profile;
+
+	@Value("${configuration.text}")
+	private String text;
+	
+	@Value("${server.port}")
+	private String port;
 
 	private static final String ERR = "Error";
 	private static final String ERR_NOTE = "Nota";
 	private static final String USER_MSG = "Mensaje para el usuario";
 	private static final String SERVER_MSG = "Mensaje interno";
 	private static final String OBJ = "Producto";
+	private static final String PROFILE = "Perfil Activo";
 	private String user_header = "";
 	private String internal_header = "";
 	private String internal_err = "";
@@ -59,14 +66,14 @@ public class ProductController {
 		}
 
 		products = productService.findAll().stream().map(producto -> {
-			producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+			producto.setPort(Integer.parseInt(port));
 			return producto;
 		}).collect(Collectors.toList());
 
 		return new ResponseEntity<>(products, HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/search/{id}")
 	public ResponseEntity<?> details(@PathVariable Long id) throws InterruptedException {
 		Product currentProduct;
 		response = new HashMap<>();
@@ -99,7 +106,7 @@ public class ProductController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		currentProduct.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+		currentProduct.setPort(Integer.parseInt(port));
 
 		return new ResponseEntity<>(currentProduct, HttpStatus.OK);
 	}
@@ -128,6 +135,8 @@ public class ProductController {
 
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
+		newProduct.setPort(Integer.parseInt(port));
 
 		internal_header = "El producto, ha sido cargado con éxito en la base de datos.";
 
@@ -161,7 +170,7 @@ public class ProductController {
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			}
 
-			currentProduct.setCreateAt(product.getCreateAt());
+			currentProduct.setCreatedAt(product.getCreatedAt());
 			currentProduct.setName(product.getName());
 			currentProduct.setPrice(product.getPrice());
 
@@ -179,6 +188,8 @@ public class ProductController {
 
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
+		updatedProduct.setPort(Integer.parseInt(port));
 
 		internal_header = "El producto, ha sido actualizado con éxito en la base de datos.";
 
@@ -211,6 +222,16 @@ public class ProductController {
 		internal_header = "El producto, ha sido eliminado con éxito en la base de datos.";
 
 		response.put(SERVER_MSG, internal_header);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/configs")
+	public ResponseEntity<?> getConfig() {
+		response = new HashMap<>();
+
+		response.put(ERR_NOTE, text);
+		response.put(PROFILE, profile);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

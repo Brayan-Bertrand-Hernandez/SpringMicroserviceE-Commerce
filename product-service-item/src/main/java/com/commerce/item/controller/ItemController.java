@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -34,10 +33,10 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 public class ItemController {
 
 	@Autowired
-	private Environment env;
-
-	@Autowired
 	private ItemService itemService;
+	
+	@Value("${spring.profiles.active}")
+	private String profile;
 
 	@Value("${configuration.text}")
 	private String text;
@@ -50,6 +49,7 @@ public class ItemController {
 	private static final String USER_MSG = "Mensaje para el usuario";
 	private static final String SERVER_MSG = "Mensaje interno";
 	private static final String OBJ = "Ticket";
+	private static final String PROFILE = "Perfil Activo";
 	private String user_header = "";
 	private String internal_header = "";
 	private String internal_err = "";
@@ -76,7 +76,7 @@ public class ItemController {
 	}
 
 	@CircuitBreaker(name = "items", fallbackMethod = "detailOPtionalMethod")
-	@GetMapping("/{id}/quantity/{quantity}")
+	@GetMapping("/search/{id}/quantity/{quantity}")
 	public ResponseEntity<?> details(@PathVariable Long id, @PathVariable Integer quantity) {
 		Item currentItem;
 		response = new HashMap<>();
@@ -167,7 +167,7 @@ public class ItemController {
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			}
 			
-			currentProduct.setCreateAt(product.getCreateAt());
+			currentProduct.setCreatedAt(product.getCreatedAt());
 			currentProduct.setName(product.getName());
 			currentProduct.setPrice(product.getPrice());
 			currentProduct.setPort(product.getPort());
@@ -229,12 +229,7 @@ public class ItemController {
 		response = new HashMap<>();
 
 		response.put(ERR_NOTE, text);
-		response.put("Puerto", port);
-
-		if (env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")) {
-			response.put("Nombre de autor", env.getProperty("configuration.author.name"));
-			response.put("Email de autor", env.getProperty("configuration.author.email"));
-		}
+		response.put(PROFILE, profile);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
