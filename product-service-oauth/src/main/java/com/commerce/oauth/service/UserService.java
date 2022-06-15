@@ -1,4 +1,4 @@
-package com.commerce.ouath.service;
+package com.commerce.oauth.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,29 +13,29 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.commerce.commons.users.model.Client;
-import com.commerce.ouath.restclient.ClientRestClient;
+import com.commerce.oauth.restclient.ClientRestClient;
 
 @Service
 public class UserService implements UserDetailsService {
 
 	@Autowired
 	private ClientRestClient feignClient;
-	
+
 	private static final String ERR = "Lo sentimos, no hemos podido encontrar el email que ha ingresado en el sistema, verifique que el siguiente correo sea suyo: ";
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Client currentUsername = feignClient.findByEmail(email);
-		
-		if(currentUsername == null) {
+
+		if (currentUsername == null) {
 			throw new UsernameNotFoundException(ERR.concat(email));
 		}
 
 		List<GrantedAuthority> authorities = currentUsername.getAuthorities().stream()
 				.map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toList());
 
-		return new User(currentUsername.getEmail(),
-				currentUsername.getPassword(), currentUsername.getIsEnabled(), true, true, true, authorities);
+		return new User(currentUsername.getEmail(), currentUsername.getPassword(), currentUsername.getIsEnabled(), true,
+				true, true, authorities);
 	}
 
 }
