@@ -198,6 +198,7 @@ public class UserController {
 		User currentUser;
 		User enabledUser;
 		response = new HashMap<>();
+		mail = new Email();
 
 		try {
 			currentUser = userService.findByEmail(email);
@@ -250,6 +251,7 @@ public class UserController {
 	public ResponseEntity<?> createClient(@RequestBody User user, BindingResult bindingResult) {
 		User newClient;
 		response = new HashMap<>();
+		mail = new Email();
 
 		if (bindingResult.hasErrors()) {
 			return binding(bindingResult);
@@ -303,6 +305,7 @@ public class UserController {
 	public ResponseEntity<?> update(@RequestBody User user, BindingResult bindingResult, @PathVariable Long id) {
 		User currentUser = userService.findById(id);
 		User updatedUser;
+		mail = new Email();
 
 		response = new HashMap<>();
 
@@ -416,6 +419,7 @@ public class UserController {
 	public ResponseEntity<?> recoverAccount(@RequestBody User user) {
 		User recoveryUser;
 		response = new HashMap<>();
+		mail = new Email();
 
 		try {
 			recoveryUser = userService.findByEmail(user.getEmail());
