@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.commerce.users.model.User;
- 
-public interface UserRepository extends JpaRepository<User, Long>{
-	
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
 	User findByEmail(String email);
-    
+
 	List<User> findAllByIsEnabled(Boolean isEnabled);
-    
-    Page<User> findAllByIsEnabled(Boolean isEnabled, Pageable pageable);
-	
+
+	Page<User> findAllByIsEnabled(Boolean isEnabled, Pageable pageable);
+
 }

@@ -6,6 +6,8 @@ public class Email {
 	private String subject;
 	private String body;
 	private String pathToAttachment;
+	
+	public Email() { }
 
 	public Email(String to, String subject, String body, String pathToAttachment) {
 		this.to = to;

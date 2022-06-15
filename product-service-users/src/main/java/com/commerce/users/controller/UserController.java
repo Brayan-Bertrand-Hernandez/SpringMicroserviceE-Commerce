@@ -82,9 +82,9 @@ public class UserController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		users = userService.findAll().stream().map(user -> {
-			user.setPort(Integer.parseInt(port));
-			return user;
+		users = userService.findAll().stream().map(u -> {
+			u.setPort(Integer.parseInt(port));
+			return u;
 		}).collect(Collectors.toList());
 
 		return new ResponseEntity<>(users, HttpStatus.OK);
@@ -381,6 +381,7 @@ public class UserController {
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		User deleteUser = userService.findById(id);
 		response = new HashMap<>();
+		mail = new Email();
 
 		try {
 			userService.delete(id);
