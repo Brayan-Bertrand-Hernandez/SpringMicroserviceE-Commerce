@@ -23,16 +23,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.commerce.commons.email.model.Email;
 import com.commerce.commons.users.model.Role;
-import com.commerce.commons.users.model.User;
+import com.commerce.commons.users.model.Client;
 import com.commerce.users.service.EmailService;
 import com.commerce.users.service.RoleService;
-import com.commerce.users.service.UserService;
+import com.commerce.users.service.ClientService;
 
 @Controller
-public class UserController {
+public class ClientController {
 
 	@Autowired
-	private UserService userService;
+	private ClientService clientService;
 
 	@Autowired
 	private RoleService roleService;
@@ -69,7 +69,7 @@ public class UserController {
 
 	@GetMapping("/index")
 	public ResponseEntity<?> index() {
-		List<User> users = userService.findAll();
+		List<Client> users = clientService.findAll();
 		response = new HashMap<>();
 
 		if (users.isEmpty()) {
@@ -82,7 +82,7 @@ public class UserController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		users = userService.findAll().stream().map(u -> {
+		users = clientService.findAll().stream().map(u -> {
 			u.setPort(Integer.parseInt(port));
 			return u;
 		}).collect(Collectors.toList());
@@ -92,7 +92,7 @@ public class UserController {
 
 	@GetMapping("/index/enabled")
 	public ResponseEntity<?> indexEnabledUsers() {
-		List<User> enabled_users = userService.findAllEnabledUsers();
+		List<Client> enabled_users = clientService.findAllEnabledUsers();
 		response = new HashMap<>();
 
 		if (enabled_users.isEmpty()) {
@@ -105,7 +105,7 @@ public class UserController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		enabled_users = userService.findAllEnabledUsers().stream().map(user -> {
+		enabled_users = clientService.findAllEnabledUsers().stream().map(user -> {
 			user.setPort(Integer.parseInt(port));
 			return user;
 		}).collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class UserController {
 
 	@GetMapping("/page/{page}")
 	public ResponseEntity<?> indexPage(@PathVariable Integer page) {
-		Page<User> page_users = userService.findAll(PageRequest.of(page, 5));
+		Page<Client> page_users = clientService.findAll(PageRequest.of(page, 5));
 		response = new HashMap<>();
 
 		if (page_users.isEmpty()) {
@@ -136,7 +136,7 @@ public class UserController {
 
 	@GetMapping("/enabled/page/{page}")
 	public ResponseEntity<?> indexEnabledUsersPage(@PathVariable Integer page) {
-		Page<User> page_enabled_users = userService.findAllEnabledUsers(PageRequest.of(page, 5));
+		Page<Client> page_enabled_users = clientService.findAllEnabledUsers(PageRequest.of(page, 5));
 		response = new HashMap<>();
 
 		if (page_enabled_users.isEmpty()) {
@@ -155,13 +155,13 @@ public class UserController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/search/{id}")
-	public ResponseEntity<?> show(@PathVariable Long id) {
-		User currentUser;
+	@GetMapping("/search/id/{id}")
+	public ResponseEntity<?> showID(@PathVariable Long id) {
+		Client currentUser;
 		response = new HashMap<>();
 
 		try {
-			currentUser = userService.findById(id);
+			currentUser = clientService.findById(id);
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
 			internal_header = "Error al realizar la consulta en la base de datos.";
@@ -192,19 +192,57 @@ public class UserController {
 
 		return new ResponseEntity<>(currentUser, HttpStatus.OK);
 	}
+	
+	@GetMapping("/search/email/{email}")
+	public ResponseEntity<?> showEmail(@PathVariable String email) {
+		Client currentUser;
+		response = new HashMap<>();
+
+		try {
+			currentUser = clientService.findByEmail(email);
+		} catch (DataAccessException e) {
+			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
+			internal_header = "Error al realizar la consulta en la base de datos.";
+			internal_err = "Dato invalido.";
+			note_err = "Verifique que el dato enviado sea String.";
+
+			response.put(USER_MSG, user_header);
+			response.put(SERVER_MSG, internal_header);
+			response.put(ERR, internal_err);
+			response.put(ERR_NOTE, note_err);
+
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		if (currentUser == null) {
+			user_header = "Lo sentimos, el recurso solicitado no existe.";
+			internal_header = "El registro del usuario con email ".concat(email.concat(" no existe."));
+			note_err = "Verifique que el Email solicitado exista en la base de datos.";
+
+			response.put(USER_MSG, user_header);
+			response.put(SERVER_MSG, internal_header);
+			response.put(ERR_NOTE, note_err);
+
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		}
+
+		currentUser.setPort(Integer.parseInt(port));
+
+		return new ResponseEntity<>(currentUser, HttpStatus.OK);
+	}
 
 	@GetMapping("/enabled/email/{email}")
 	public ResponseEntity<?> enabled(@PathVariable String email) {
-		User currentUser;
-		User enabledUser;
+		Client currentUser;
+		Client enabledUser;
 		response = new HashMap<>();
 		mail = new Email();
 
 		try {
-			currentUser = userService.findByEmail(email);
+			currentUser = clientService.findByEmail(email);
 			currentUser.setIsEnabled(Boolean.TRUE);
 
-			enabledUser = userService.save(currentUser);
+			enabledUser = clientService.save(currentUser);
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
 			internal_header = "Error al realizar la consulta en la base de datos.";
@@ -248,8 +286,8 @@ public class UserController {
 	}
 
 	@PostMapping("/sign-up")
-	public ResponseEntity<?> createClient(@RequestBody User user, BindingResult bindingResult) {
-		User newClient;
+	public ResponseEntity<?> createClient(@RequestBody Client user, BindingResult bindingResult) {
+		Client newClient;
 		response = new HashMap<>();
 		mail = new Email();
 
@@ -257,14 +295,14 @@ public class UserController {
 			return binding(bindingResult);
 		}
 
-		User passiveClient = userService.findByEmail(user.getEmail());
+		Client passiveClient = clientService.findByEmail(user.getEmail());
 
 		try {
 			// String passwordEncoded = bCryptPasswordEncoder.encode(user.getPassword());
 
 			// user.setPassword(passwordEncoded);
 
-			newClient = userService.save(user);
+			newClient = clientService.save(user);
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
 			internal_header = "Error al realizar la inserción en la base de datos.";
@@ -302,9 +340,9 @@ public class UserController {
 	}
 
 	@PutMapping("/update/{id}")
-	public ResponseEntity<?> update(@RequestBody User user, BindingResult bindingResult, @PathVariable Long id) {
-		User currentUser = userService.findById(id);
-		User updatedUser;
+	public ResponseEntity<?> update(@RequestBody Client user, BindingResult bindingResult, @PathVariable Long id) {
+		Client currentUser = clientService.findById(id);
+		Client updatedUser;
 		mail = new Email();
 
 		response = new HashMap<>();
@@ -341,7 +379,7 @@ public class UserController {
 
 			currentUser.setPassword(user.getPassword());
 
-			updatedUser = userService.save(currentUser);
+			updatedUser = clientService.save(currentUser);
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
 			internal_header = "Error al realizar la inserción en la base de datos.";
@@ -382,12 +420,12 @@ public class UserController {
 
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
-		User deleteUser = userService.findById(id);
+		Client deleteUser = clientService.findById(id);
 		response = new HashMap<>();
 		mail = new Email();
 
 		try {
-			userService.delete(id);
+			clientService.delete(id);
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, el recurso solicitado no existe.";
 			internal_header = "El registro del usuario con id ".concat(id.toString().concat(" no existe."));
@@ -416,13 +454,13 @@ public class UserController {
 	}
 
 	@PostMapping("/recovery-account")
-	public ResponseEntity<?> recoverAccount(@RequestBody User user) {
-		User recoveryUser;
+	public ResponseEntity<?> recoverAccount(@RequestBody Client user) {
+		Client recoveryUser;
 		response = new HashMap<>();
 		mail = new Email();
 
 		try {
-			recoveryUser = userService.findByEmail(user.getEmail());
+			recoveryUser = clientService.findByEmail(user.getEmail());
 		} catch (DataAccessException e) {
 			user_header = "Lo sentimos, hemos tenido problemas para procesar su solicitud, contacte con un asesor de la página.";
 			internal_header = "Error al realizar la consulta en la base de datos.";
@@ -453,7 +491,7 @@ public class UserController {
 
 		recoveryUser.setPassword(user.getPassword());
 
-		recoveryUser = userService.save(recoveryUser);
+		recoveryUser = clientService.save(recoveryUser);
 
 		user_header = "Contraseña cambiada con exito.";
 		internal_header = "El usuario ha sido modificado con éxito.";
